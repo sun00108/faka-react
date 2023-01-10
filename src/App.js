@@ -1,24 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {Fragment} from 'react'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Home from './pages/home'
+
+import ProductIndex from './pages/product/index'
+
+import AdminAuthLogin from "./pages/admin/auth/login";
+import AdminAuthRegister from "./pages/admin/auth/register";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Fragment>
+      <Router>
+        <Routes>
+            <Route path={'/'} element={<Home />} />
+            <Route path={'/products'} element={<ProductIndex />} />
+            <Route path={'/admin/auth/login'} element={<AdminAuthLogin />} />
+            <Route path={'/admin/auth/register'} element={<AdminAuthRegister />} />
+        </Routes>
+      </Router>
+    </Fragment>
   );
 }
 

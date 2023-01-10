@@ -1,0 +1,5 @@
+import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+
+export const isLoginAtom = atomWithStorage( 'isLogin', false)
+export const jwtTokenAtom = atomWithStorage( 'jwtToken', '')
