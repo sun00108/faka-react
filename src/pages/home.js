@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { useNavigate } from 'react-router-dom'
 
-import {Card, Button, Row, Col} from '@douyinfe/semi-ui';
+import {Card, Button, Row, Col, Space} from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 import { Layout, Nav } from '@douyinfe/semi-ui';
 import { Form, Tooltip } from '@douyinfe/semi-ui';
@@ -20,7 +20,7 @@ export default function Home() {
     const { Meta } = Card;
 
     const selectedCardStyle = {
-        borderColor: '#E16B8C',
+        borderColor: process.env.REACT_APP_COLOR,
         borderWidth: '2px'
     }
 
@@ -56,7 +56,7 @@ export default function Home() {
                     <Row type={'flex'} justify={'center'}>
                         <Col xs={20} lg={12}>
                             <Title style={{ margin: '50px 0 0 0' }} >
-                                先辈杂货铺
+                                {process.env.REACT_APP_SITE_NAME}
                             </Title>
                             <Paragraph style={{ margin: '25px 0 50px 0' }}>
                                 没准可以放点公告什么的。
@@ -85,26 +85,56 @@ export default function Home() {
                             </Row>
                         </Col>
                     </Row>
-                    <Row type={'flex'} justify={'center'}>
-                        <Col xs={20} lg={12}>
-                            <Row type={'flex'}>
-                                {
-                                    productList.map((product) => {
-                                        return (
-                                            <Col xs={12} lg={6}>
-                                                <Card shadows='always'
-                                                      bodyStyle={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
-                                                    <Title heading={5}>{product.name}</Title>
-                                                    <br/>
-                                                    <Paragraph>{product.description}</Paragraph>
-                                                </Card>
-                                            </Col>
-                                        )
-                                    })
-                                }
-                            </Row>
-                        </Col>
-                    </Row>
+                    { productList.length > 0 ?
+                        <Row type={'flex'} justify={'center'}>
+                            <Col xs={20} lg={12}>
+                                <Card>
+                                    <Row type={'flex'} gutter={16}>
+                                        {
+                                            productList.map((product) => {
+                                                return (
+                                                    <Col xs={24} lg={12}>
+                                                        <Card shadows='always'
+                                                              style={{
+                                                                  margin: '0 0 16px 0'
+                                                              }}
+                                                              bodyStyle={{
+                                                                  display: 'flex',
+                                                                  alignItems: 'center',
+                                                                  justifyContent: 'space-between'
+                                                              }}
+                                                              title={product.name}
+                                                              headerExtraContent={"库存: " + product.stock}
+                                                              footerLine={true}
+                                                              footerStyle={{
+                                                                  display: 'flex',
+                                                                  justifyContent: 'flex-end'
+                                                              }}
+                                                              footer={
+                                                                  <Space>
+                                                                      <Paragraph>￥{product.price}</Paragraph>
+                                                                      {
+                                                                          product.stock <= 0 ?
+                                                                              <Button disabled>缺货</Button> :
+                                                                              <Button theme='solid' type='primary'>购买</Button>
+                                                                      }
+                                                                  </Space>
+                                                              }
+                                                        >
+                                                            <Paragraph ellipsis={{ expandable: true, collapsible: true, collapseText: '折叠' }} style={{ width: '100%' }}>
+                                                                {product.description}
+                                                            </Paragraph>
+                                                        </Card>
+                                                    </Col>
+                                                )
+                                            })
+                                        }
+                                    </Row>
+                                </Card>
+                            </Col>
+                        </Row>
+                        : <br /> // 这个实现有点怪
+                    }
                 </div>
             </Content>
         </Layout>
