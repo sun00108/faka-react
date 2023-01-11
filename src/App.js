@@ -5,8 +5,6 @@ import Home from './pages/home'
 
 import AuthLogin from './pages/auth/login'
 
-import ProductIndex from './pages/product/index'
-
 import AdminAuthLogin from "./pages/admin/auth/login";
 import AdminAuthRegister from "./pages/admin/auth/register";
 
@@ -17,7 +15,6 @@ function App() {
         <Routes>
             <Route path={'/'} element={<Home />} />
             <Route path={'/auth/login'} element={<AuthLogin />} />
-            <Route path={'/products'} element={<ProductIndex />} />
             <Route path={'/admin/auth/login'} element={<AdminAuthLogin />} />
             <Route path={'/admin/auth/register'} element={<AdminAuthRegister />} />
         </Routes>

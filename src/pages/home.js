@@ -1,9 +1,10 @@
 import React, { Component, Fragment } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
-import {Card, Button, Row, Col, Space} from '@douyinfe/semi-ui';
+import { Card, Button, Row, Col, Space, Divider } from '@douyinfe/semi-ui';
 import { Typography } from '@douyinfe/semi-ui';
 import { Layout, Nav } from '@douyinfe/semi-ui';
+import { SideSheet, InputNumber, Input } from '@douyinfe/semi-ui';
 import { Form, Tooltip } from '@douyinfe/semi-ui';
 import { IconHelpCircle } from '@douyinfe/semi-icons';
 
@@ -19,16 +20,22 @@ export default function Home() {
     const { Header, Footer, Content } = Layout;
     const { Meta } = Card;
 
+    const [visible, setVisible] = React.useState(false);
+
     const selectedCardStyle = {
         borderColor: process.env.REACT_APP_COLOR,
         borderWidth: '2px'
     }
 
     const [ isLogin, setIsLogin ] = useAtom(isLoginAtom)
-    const [ , setJwtToken ] = useAtom(jwtTokenAtom)
+    const [ jwtToken, setJwtToken ] = useAtom(jwtTokenAtom)
     const [ productGroupList, setProductGroupList ] = React.useState([]);
     const [ productList, setProductList ] = React.useState([]);
     const [ selectedProductGroup, setSelectedProductGroup ] = React.useState(1);
+    const [ productPurchase, setProductPurchase ] = React.useState({});
+    const [ productPurchaseQuantity, setProductPurchaseQuantity ] = React.useState(1);
+    const [ guestOrderEmail, setGuestOrderEmail ] = React.useState('');
+    const [ productPurchaseErrorMessage, setProductPurchaseErrorMessage ] = React.useState('');
 
     const navigate = useNavigate();
 
@@ -44,9 +51,37 @@ export default function Home() {
         })
     }
 
+    const submitProductPurchase = () => {
+        if(!isLogin) {
+            if(!guestOrderEmail) {
+                setProductPurchaseErrorMessage('请输入邮箱地址。')
+                return
+            }
+        } else {
+            axios.defaults.headers.common['Authorization'] = jwtToken;
+        }
+        axios.post( process.env.REACT_APP_API_HOST + '/api/orders/submit', {
+            productId: productPurchase.id,
+            quantity: productPurchaseQuantity,
+            email: guestOrderEmail
+        }).then( res => {
+            if(res.data.code == 200) {
+                alert('下单成功')
+                navigate('/orders')
+            } else {
+                alert(res.data.message)
+            }
+        })
+    }
+
     React.useEffect(() => {
         fetchProductGroups()
     }, [])
+
+    const sidePurchaseFooter = (
+        <div>
+        </div>
+    )
 
     return (
         <Layout className="components-layout-demo">
@@ -116,7 +151,14 @@ export default function Home() {
                                                                       {
                                                                           product.stock <= 0 ?
                                                                               <Button disabled>缺货</Button> :
-                                                                              <Button theme='solid' type='primary'>购买</Button>
+                                                                              <Button theme='solid' type='primary'
+                                                                                      onClick={() => {
+                                                                                          setProductPurchase(product)
+                                                                                          setVisible(true)
+                                                                                      }}>
+                                                                                  购买
+                                                                              </Button>
+
                                                                       }
                                                                   </Space>
                                                               }
@@ -136,6 +178,26 @@ export default function Home() {
                         : <br /> // 这个实现有点怪
                     }
                 </div>
+                <SideSheet title={productPurchase.name} visible={visible}
+                           onCancel={() => setVisible(false)}
+                           footer={sidePurchaseFooter}
+                >
+                    <Paragraph>{productPurchase.description}</Paragraph>
+                    <br />
+                    <Form>
+                        <Form.InputNumber field='number' initValue={productPurchaseQuantity} min={1} max={productPurchase.stock}
+                                     onNumberChange={(e) => setProductPurchaseQuantity(e)}
+                                     style={{ width: 80 }} label={{ text: '购买数量', required: true }}/>
+                        {
+                            isLogin ? <div></div> : <Form.Input field='email' label={{ text: '邮箱地址', required: true }} style={{ width: '80%' }} onChange={(e) => setGuestOrderEmail(e)}/>
+                        }
+                    </Form>
+                    <Divider margin='12px'/>
+                    <p style={{ display: 'flex', justifyContent: 'flex-end' }}>合计 ￥ {productPurchase.price*productPurchaseQuantity}</p>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button theme="solid" onClick={() => submitProductPurchase()}>购买</Button>
+                    </div>
+                </SideSheet>
             </Content>
         </Layout>
     )
