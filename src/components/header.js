@@ -48,7 +48,7 @@ export default function AppHeader() {
                         <IconSemiLogo style={{ fontSize: 36 }} />
                     </Nav.Header>
                     <Nav.Item link={"/"} itemKey="Home" text="首页" icon={<IconHome size="large" />} />
-                    <Nav.Item link={"/orders"} itemKey="Order" text="订单" icon={<IconSetting size="large" />} />
+                    <Nav.Item link={"/order"} itemKey="Order" text="订单" icon={<IconSetting size="large" />} />
                 </Nav>
             </div>
         </Header>

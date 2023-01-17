@@ -5,6 +5,7 @@ import Home from './pages/home'
 
 import AuthLogin from './pages/auth/login'
 
+import OrderIndex from './pages/order/index'
 import OrderInfo from './pages/order/info'
 import OrderInfoGuest from './pages/order/infoGuest'
 
@@ -18,6 +19,7 @@ function App() {
         <Routes>
             <Route path={'/'} element={<Home />} />
             <Route path={'/auth/login'} element={<AuthLogin />} />
+            <Route path={'/order'} element={<OrderIndex />} />
             <Route path={'/order/:id'} element={<OrderInfo />} />
             <Route path={'/order/guest/:code'} element={<OrderInfoGuest />} />
             <Route path={'/admin/auth/login'} element={<AdminAuthLogin />} />
