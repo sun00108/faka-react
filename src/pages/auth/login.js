@@ -33,7 +33,7 @@ export default function AuthLogin() {
             password: password
         }).then( res => {
             if (res.data.code == 200) {
-                let token = res.headers['Authorization'];
+                let token = res.headers['authorization'];
                 setIsLogin(true)
                 setJwtToken(token)
                 setUsernameAtom(username)

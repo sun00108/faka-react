@@ -52,22 +52,35 @@ export default function Home() {
     }
 
     const submitProductPurchase = () => {
+        setProductPurchaseErrorMessage('')
+        let productPurchaseData
         if(!isLogin) {
             if(!guestOrderEmail) {
                 setProductPurchaseErrorMessage('请输入邮箱地址。')
                 return
             }
+            productPurchaseData = {
+                productId: productPurchase.id,
+                quantity: productPurchaseQuantity,
+                email: guestOrderEmail
+            }
         } else {
             axios.defaults.headers.common['Authorization'] = jwtToken;
+            productPurchaseData = {
+                productId: productPurchase.id,
+                quantity: productPurchaseQuantity
+            }
         }
-        axios.post( process.env.REACT_APP_API_HOST + '/api/orders/submit', {
-            productId: productPurchase.id,
-            quantity: productPurchaseQuantity,
-            email: guestOrderEmail
-        }).then( res => {
+        axios.post( process.env.REACT_APP_API_HOST + '/api/orders/submit', productPurchaseData).then( res => {
             if(res.data.code == 200) {
                 alert('下单成功')
-                navigate('/orders')
+                if (isLogin) {
+                    const orderId = res.data.data.id
+                    navigate('/order/' + orderId)
+                } else {
+                    const accessCode = res.data.data.accessCode
+                    navigate('/order/guest/' + accessCode )
+                }
             } else {
                 alert(res.data.message)
             }
@@ -193,6 +206,7 @@ export default function Home() {
                         }
                     </Form>
                     <Divider margin='12px'/>
+                    <p style-={{ display: 'flex', justifyContent: 'flex-end', textColor: 'red' }}>{productPurchaseErrorMessage}</p>
                     <p style={{ display: 'flex', justifyContent: 'flex-end' }}>合计 ￥ {productPurchase.price*productPurchaseQuantity}</p>
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                         <Button theme="solid" onClick={() => submitProductPurchase()}>购买</Button>
