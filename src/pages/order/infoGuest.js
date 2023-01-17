@@ -25,12 +25,28 @@ export default function OrderInfoGuest() {
     const [ order, setOrder ] = React.useState({})
     const [ gateways, setGateways ] = React.useState([]);
 
+    const newTab = (url) => {
+        window.open(url, '_blank');
+    }
+
     const fetchOrderInfoGuest = () => {
         axios.get( process.env.REACT_APP_API_HOST + '/api/orders/guest/' + code ).then( res => {
             if (res.data.code == 200) {
                 console.log(res.data.data)
                 setOrder(res.data.data)
                 setGateways(res.data.data.gateways)
+            } else {
+                alert(res.data.message)
+            }
+        })
+    }
+
+    const submitOrderGuestPayment = (gatewayID) => {
+        axios.post( process.env.REACT_APP_API_HOST + '/api/orders/guest/' + code + '/pay', {
+            gatewayId: gatewayID
+        }).then( res => {
+            if (res.data.code == 200) {
+                newTab(res.data.data.paymentUrl)
             } else {
                 alert(res.data.message)
             }
@@ -53,11 +69,13 @@ export default function OrderInfoGuest() {
                                 <p style={{ margin: '16px 0 0 0' }}>{ order.accessCode }</p>
                                 <p>
                                     {
-                                        gateways.map( (gateway) => {
-                                            return (
-                                                <Button>{gateway.friendlyName}</Button>
-                                            )
-                                        })
+                                        gateways.length > 0 ? (
+                                            gateways.map( (gateway) => {
+                                                return (
+                                                    <Button onClick={() => {submitOrderGuestPayment(gateway.id)}}>{gateway.friendlyName}</Button>
+                                                )
+                                            })
+                                        ) : <span>暂无可用支付方式</span>
                                     }
                                 </p>
                             </Card>

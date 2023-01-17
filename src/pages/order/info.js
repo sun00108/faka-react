@@ -21,12 +21,69 @@ export default function OrderInfo() {
     const { Meta } = Card;
 
     const { id } = useParams();
+    const [ jwtToken, setJwtToken ] = useAtom(jwtTokenAtom)
+
+    const [ order, setOrder ] = React.useState({})
+    const [ gateways, setGateways ] = React.useState([]);
+
+    const newTab = (url) => {
+        window.open(url, '_blank');
+    }
+
+    const fetchOrderInfo = () => {
+        axios.defaults.headers.common['Authorization'] = jwtToken;
+        axios.get( process.env.REACT_APP_API_HOST + '/api/orders/' + id ).then( res => {
+            if (res.data.code == 200) {
+                console.log(res.data.data)
+                setOrder(res.data.data)
+                //setGateways(res.data.data.gateways)
+            } else {
+                alert(res.data.message)
+            }
+        })
+    }
+
+    const submitOrderPayment = (gatewayID) => {
+        axios.defaults.headers.common['Authorization'] = jwtToken;
+        axios.post( process.env.REACT_APP_API_HOST + '/api/orders/' + id + '/pay', {
+            gatewayId: gatewayID
+        }).then( res => {
+            if (res.data.code == 200) {
+                newTab(res.data.data.paymentUrl)
+            } else {
+                alert(res.data.message)
+            }
+        })
+    }
+
+    React.useEffect(() => {
+        fetchOrderInfo()
+    }, [])
 
     return (
         <Layout className="components-layout-demo">
             <AppHeader />
             <Content>
-                ORDER { id } INFO
+                <div className={'grid'}>
+                    <Row type={'flex'} justify={'center'}>
+                        <Col xs={20} lg={12}>
+                            <Card style={{ margin: '50px 0 0 0' }}>
+                                <Meta title={"订单 #" + id} />
+                                <p>
+                                    {
+                                        gateways.length > 0 ? (
+                                            gateways.map( (gateway) => {
+                                                return (
+                                                <Button onClick={() => {submitOrderPayment(gateway.id)}}>{gateway.friendlyName}</Button>
+                                                )
+                                                })
+                                        ) : <span>暂无可用支付方式</span>
+                                    }
+                                </p>
+                            </Card>
+                        </Col>
+                    </Row>
+                </div>
             </Content>
         </Layout>
     )
