@@ -14,6 +14,12 @@ export default function AppHeader() {
     const [ , setJwtToken ] = useAtom(jwtTokenAtom)
     const [ username, setUsername ] = useAtom(usernameAtom)
 
+    const logout = () => {
+        setIsLogin(false)
+        setJwtToken('')
+        setUsername('')
+    }
+
     return (
         <Header style={{ backgroundColor: 'var(--semi-color-bg-1)' }}>
             <div>
@@ -25,7 +31,7 @@ export default function AppHeader() {
                                      position="bottomRight"
                                      render={
                                          <Dropdown.Menu>
-                                             <Dropdown.Item>退出登录</Dropdown.Item>
+                                             <Dropdown.Item onClick={() => {logout()}}>退出登录</Dropdown.Item>
                                          </Dropdown.Menu>
                                      }
                                  >
