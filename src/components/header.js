@@ -4,18 +4,20 @@ import React from "react";
 import {Link} from "react-router-dom";
 
 import {useAtom} from "jotai";
-import {isLoginAtom, jwtTokenAtom, usernameAtom} from "../atom";
+import {isLoginAtom, isAdminAtom, jwtTokenAtom, usernameAtom} from "../atom";
 
 export default function AppHeader() {
 
     const { Header } = Layout;
 
     const [ isLogin, setIsLogin ] = useAtom(isLoginAtom)
+    const [ isAdmin, setIsAdmin ] = useAtom(isAdminAtom)
     const [ , setJwtToken ] = useAtom(jwtTokenAtom)
     const [ username, setUsername ] = useAtom(usernameAtom)
 
     const logout = () => {
         setIsLogin(false)
+        setIsAdmin(false)
         setJwtToken('')
         setUsername('')
     }
@@ -49,6 +51,9 @@ export default function AppHeader() {
                     </Nav.Header>
                     <Nav.Item link={"/"} itemKey="Home" text="首页" icon={<IconHome size="large" />} />
                     <Nav.Item link={"/order"} itemKey="Order" text="订单" icon={<IconSetting size="large" />} />
+                    {
+                        isAdmin ? <Nav.Item link={"/admin"} itemKey="Admin" text="管理" icon={<IconSetting size="large" />} /> : null
+                    }
                 </Nav>
             </div>
         </Header>

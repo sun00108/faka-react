@@ -8,7 +8,7 @@ import { IconHelpCircle } from '@douyinfe/semi-icons';
 
 import axios from 'axios';
 import { useAtom } from 'jotai'
-import { isLoginAtom, jwtTokenAtom, usernameAtom } from '../../atom'
+import { isLoginAtom, isAdminAtom, jwtTokenAtom, usernameAtom } from '../../atom'
 
 export default function AuthLogin() {
 
@@ -22,6 +22,7 @@ export default function AuthLogin() {
     const [ username, setUsername ] = React.useState('');
     const [ password, setPassword ] = React.useState('');
     const [ isLogin, setIsLogin ] = useAtom(isLoginAtom)
+    const [ , setIsAdmin ] = useAtom(isAdminAtom)
     const [ , setJwtToken ] = useAtom(jwtTokenAtom)
     const [ , setUsernameAtom ] = useAtom(usernameAtom)
 
@@ -34,6 +35,12 @@ export default function AuthLogin() {
         }).then( res => {
             if (res.data.code == 200) {
                 let token = res.headers['authorization'];
+                let payload = JSON.parse(atob(token.split('.')[1]))
+                if ( payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"].includes("Admin") ) { // 不是，啥好人这么封装 Roles 啊？
+                    setIsAdmin(true)
+                } else {
+                    setIsAdmin(false)
+                }
                 setIsLogin(true)
                 setJwtToken(token)
                 setUsernameAtom(username)

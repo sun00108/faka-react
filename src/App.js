@@ -9,8 +9,10 @@ import OrderIndex from './pages/order/index'
 import OrderInfo from './pages/order/info'
 import OrderInfoGuest from './pages/order/infoGuest'
 
-import AdminAuthLogin from "./pages/admin/auth/login";
-import AdminAuthRegister from "./pages/admin/auth/register";
+import AdminHome from './pages/admin/home'
+import AdminProductHome from "./pages/admin/product";
+import AdminHomeContent from "./pages/admin/homeContent";
+import AdminOrderHome from "./pages/admin/order";
 
 function App() {
   return (
@@ -22,8 +24,11 @@ function App() {
             <Route path={'/order'} element={<OrderIndex />} />
             <Route path={'/order/:id'} element={<OrderInfo />} />
             <Route path={'/order/guest/:code'} element={<OrderInfoGuest />} />
-            <Route path={'/admin/auth/login'} element={<AdminAuthLogin />} />
-            <Route path={'/admin/auth/register'} element={<AdminAuthRegister />} />
+            <Route path={'/admin'} element={<AdminHome />}>
+                <Route path={''} element={<AdminHomeContent />} />
+                <Route path={'product'} element={<AdminProductHome />} />
+                <Route path={'order'} element={<AdminOrderHome />} />
+            </Route>
         </Routes>
       </Router>
     </Fragment>
